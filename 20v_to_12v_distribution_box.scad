@@ -50,7 +50,7 @@ DistanceBetweenObjects    = 10;
 // Shows the housing assembled
 ShowCaseAssembled         = false;
 
-HolesTolerance = 0.1;
+HolesTolerance = 0.15;
 
 /* [Control cuts (use only one at a time)] */
 
@@ -136,10 +136,10 @@ EdgeSquareNutInsertFrom_X = true;
 /* [Wall mount holder settings] */
  
 // Select if you need a mount holder
-EnableMountHolder         = false; 
+EnableMountHolder         = true; 
 
 // Chose your desired wall mount style
-MountHolderStyle          = 5;      // [1:Style 1, 2: Style 2, 3: Style 3, 4 : Style 4, 5 : Style 5]
+MountHolderStyle          = 4;      // [1:Style 1, 2: Style 2, 3: Style 3, 4 : Style 4, 5 : Style 5]
 
 // Some styles (1-3) allow more than one hole
 CountOfMountHolderHoles   = 1;     // [1:One hole centered, 2: Two holes, 3: Three holes]
@@ -225,11 +225,12 @@ ShowSizes(); // Show the calculated sizes
 // Move/rotate appropriately to cut through appropriate side of the box.
 
 module inlet_cut() {
+    hole_distance = 45.5 + 4.3;
     translate([0, 0, -CutDepth / 2]) {
         cylinder(h = CutDepth, r = 24 + HolesTolerance);
         for (i = [-1, 1]){
             for (j = [-1, 1]){
-                translate([i * 45.2 / 2, j * 45.2 / 2, 0]) cylinder(h = CutDepth, d = 4.3 + HolesTolerance * 2);
+                translate([i * hole_distance / 2, j * hole_distance / 2, 0]) cylinder(h = CutDepth, d = 4.3 + HolesTolerance * 2);
             }
         }
     }
@@ -251,7 +252,7 @@ module usb_charger() {
 }
 
 module power_switch() {
-    cube([12.6 + 2 * HolesTolerance, 21.3 + 2 * HolesTolerance, CutDepth], center = true);
+    cube([12.2 + 2 * HolesTolerance, 18.2 + 2 * HolesTolerance, CutDepth], center = true);
 }
 
 module xt60() {
@@ -259,7 +260,7 @@ module xt60() {
     for (i = [-1, 1]) {
         translate([i * 25 / 2, 0, -CutDepth / 2]) {
             cylinder(h = CutDepth, d = 3.10 + 2 * HolesTolerance);
-        }   
+        }
     }
 }
 
@@ -271,22 +272,22 @@ translate([X_ObjectPosition,0,0]) rotate([0,0,0]) difference(){
         //cylinder(h=20,d=15,center = true); // Example
     }
     // How much to offset the outlet cuts up. Roughly half of the output cut size.
-    OutletsOffset = 30;
+    OutletsOffset = 40;
     // The distance between an XT60 closest to the edge of the box and the edge of the box.
-    XT60EdgeDist = 30;
+    XT60EdgeDist = 25;
     // **** Add your bottom case cuts here ****
     //cylinder(h=15,d=20,center = true); // Example
     translate([Caselength / 2, 0, OutletsOffset]) rotate([0, 90, 0])  inlet_cut();
     translate([-Caselength / 2, 0, OutletsOffset]) rotate([0, 90, 0]) outlet_cut();
-    translate([0, CaseWidth / 2, OutletsOffset]) rotate([90, 0, 0]) usb_charger();
-    translate([Caselength / 2, OutletsOffset - 10, OutletsOffset * 2 + 13]) rotate([90, 0, 90]) power_switch();
+    translate([0, CaseWidth / 2, OutletsOffset - 10]) rotate([90, 0, 0]) usb_charger();
+    translate([Caselength / 2 - 25, CaseWidth / 2, 30]) rotate([90, 0, 0]) power_switch();
     
     left = - Caselength / 2 + XT60EdgeDist;
     right = Caselength / 2 - XT60EdgeDist;
     width = right - left;
     for (i = [0, 1, 2]) {
         for (j = [-1, 1]) {
-        translate([left + width / 2 * i, j * CaseWidth / 2, CaseHeight * 3 / 4 - 15]) rotate([90 * j, 0, 0]) xt60();
+        translate([left + width / 2 * i, j * CaseWidth / 2, CaseHeight - 30]) rotate([90 * j, 0, 0]) xt60();
         }
     }
 }
