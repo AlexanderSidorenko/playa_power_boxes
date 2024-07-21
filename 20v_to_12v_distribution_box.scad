@@ -50,6 +50,7 @@ DistanceBetweenObjects    = 10;
 // Shows the housing assembled
 ShowCaseAssembled         = false;
 
+HolesTolerance = 0.1;
 
 /* [Control cuts (use only one at a time)] */
 
@@ -62,11 +63,11 @@ SeeGrooveRidgeScrew       = false;
 /* [Case settings] */
 
 // Length of the case
-Caselength                = 60;
+Caselength                = 130;
 // Width of the case
 CaseWidth                 = 80;
 // Height of the case
-CaseHeight                = 40;
+CaseHeight                = 100;
 // Splitt the Case height into bottom and top, check for the needed screws in echo output (console)
 CutFromTop                = 10.0;    
 // Thickness for the bottom and top wall (vertical walls needs to be calculated)
@@ -209,11 +210,58 @@ X_ObjectPosition = ((ShowBottom)&&(ShowTop)&&(!ShowCaseAssembled)) ? Caselength/
 Y_TopRotation = ShowCaseAssembled ? 180:0;
 Z_TopHigh = ShowCaseAssembled ? CaseHeight:0;
 
+CutDepth = BottomTopThickness * 4;
+
 ShowSizes(); // Show the calculated sizes
 
 //===============================================================================
 //                                    M A I N
 //===============================================================================
+
+
+// NOTE: for all the modules named *_cut below, they generating solids that are
+// aligned in X-Y plane and cut along Z axis in both directions
+// (CutDepth / 2 up, CutDepth / 2 down).
+// Move/rotate appropriately to cut through appropriate side of the box.
+
+module inlet_cut() {
+    translate([0, 0, -CutDepth / 2]) {
+        cylinder(h = CutDepth, r = 24 + HolesTolerance);
+        for (i = [-1, 1]){
+            for (j = [-1, 1]){
+                translate([i * 45.2 / 2, j * 45.2 / 2, 0]) cylinder(h = CutDepth, d = 4.3 + HolesTolerance * 2);
+            }
+        }
+    }
+}
+
+module outlet_cut() {
+    translate([0, 0, -CutDepth / 2]) {
+        cylinder(h = CutDepth, d = 46.4 + 2 * HolesTolerance);
+        for (i = [0, 1, 2]){
+            rotate([180 + i * 120, 90, 0]) translate([0, 0, 67.3 / 2 - 4.6]) rotate([0, -90, 0]) cylinder(h = CutDepth, d = 4.3 + 3 * HolesTolerance);
+        }
+    }
+}
+
+module usb_charger() {
+    translate([0, 0, -CutDepth / 2]) {
+        cylinder(h = CutDepth, d = 28.4 + 2 * HolesTolerance);
+    }
+}
+
+module power_switch() {
+    cube([12.6 + 2 * HolesTolerance, 21.3 + 2 * HolesTolerance, CutDepth], center = true);
+}
+
+module xt60() {
+    cube([18.7 + 2 * HolesTolerance, 11.6 + 2 * HolesTolerance, CutDepth], center = true);
+    for (i = [-1, 1]) {
+        translate([i * 25 / 2, 0, -CutDepth / 2]) {
+            cylinder(h = CutDepth, d = 3.10 + 2 * HolesTolerance);
+        }   
+    }
+}
 
 // --> Show the bottom of the case
 translate([X_ObjectPosition,0,0]) rotate([0,0,0]) difference(){
@@ -222,8 +270,30 @@ translate([X_ObjectPosition,0,0]) rotate([0,0,0]) difference(){
         // **** Add your bottom case additions here ****
         //cylinder(h=20,d=15,center = true); // Example
     }
+    // How much to offset the outlet cuts up. Roughly half of the output cut size.
+    OutletsOffset = 30;
+    // The distance between an XT60 closest to the edge of the box and the edge of the box.
+    XT60EdgeDist = 30;
     // **** Add your bottom case cuts here ****
     //cylinder(h=15,d=20,center = true); // Example
+    translate([Caselength / 2, 0, OutletsOffset]) rotate([0, 90, 0])  inlet_cut();
+    translate([-Caselength / 2, 0, OutletsOffset]) rotate([0, 90, 0]) outlet_cut();
+    translate([0, CaseWidth / 2, OutletsOffset]) rotate([90, 0, 0]) usb_charger();
+    translate([Caselength / 2, OutletsOffset - 10, OutletsOffset * 2 + 13]) rotate([90, 0, 90]) power_switch();
+    
+    left = - Caselength / 2 + XT60EdgeDist;
+    right = Caselength / 2 - XT60EdgeDist;
+    width = right - left;
+    for (i = [0, 1, 2]) {
+        for (j = [-1, 1]) {
+        translate([left + width / 2 * i, j * CaseWidth / 2, CaseHeight * 3 / 4 - 15]) rotate([90 * j, 0, 0]) xt60();
+        }
+    }
+}
+
+module power_meter_cut() {
+    
+    cube([84.7 + HolesTolerance * 2, 44.6 + HolesTolerance * 2, CutDepth], center = true);
 }
 
 // --> Show the top of the case
@@ -234,7 +304,7 @@ translate([-X_ObjectPosition,0,Z_TopHigh+0.03]) rotate([0,Y_TopRotation,0]) diff
         //cylinder(h=18,d=10,center = true); // Example
     }
     // **** Add your top case cuts here ****
-    //cylinder(h=20,d=5,center = true); // Example
+    power_meter_cut();
 }
 
 //===============================================================================
