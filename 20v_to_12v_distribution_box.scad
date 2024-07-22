@@ -63,9 +63,9 @@ SeeGrooveRidgeScrew       = false;
 /* [Case settings] */
 
 // Length of the case
-Caselength                = 130;
+Caselength                = 80;
 // Width of the case
-CaseWidth                 = 80;
+CaseWidth                 = 130;
 // Height of the case
 CaseHeight                = 100;
 // Splitt the Case height into bottom and top, check for the needed screws in echo output (console)
@@ -277,17 +277,17 @@ translate([X_ObjectPosition,0,0]) rotate([0,0,0]) difference(){
     XT60EdgeDist = 25;
     // **** Add your bottom case cuts here ****
     //cylinder(h=15,d=20,center = true); // Example
-    translate([Caselength / 2, 0, OutletsOffset]) rotate([0, 90, 0])  inlet_cut();
-    translate([-Caselength / 2, 0, OutletsOffset]) rotate([0, 90, 0]) outlet_cut();
-    translate([0, CaseWidth / 2, OutletsOffset - 10]) rotate([90, 0, 0]) usb_charger();
-    translate([Caselength / 2 - 25, CaseWidth / 2, 30]) rotate([90, 0, 0]) power_switch();
+    translate([0, CaseWidth / 2, OutletsOffset]) rotate([0, 90, 90])  inlet_cut();
+    translate([0, -CaseWidth / 2, OutletsOffset]) rotate([0, 90, 90]) outlet_cut();
+    translate([Caselength / 2, 0, OutletsOffset - 10]) rotate([90, 0, 90]) usb_charger();
+    translate([Caselength / 2, CaseWidth / 2 - 25, 30]) rotate([90, 0, 90]) power_switch();
     
-    left = - Caselength / 2 + XT60EdgeDist;
-    right = Caselength / 2 - XT60EdgeDist;
+    left = - CaseWidth / 2 + XT60EdgeDist;
+    right = CaseWidth / 2 - XT60EdgeDist;
     width = right - left;
     for (i = [0, 1, 2]) {
         for (j = [-1, 1]) {
-        translate([left + width / 2 * i, j * CaseWidth / 2, CaseHeight - 30]) rotate([90 * j, 0, 0]) xt60();
+        translate([Caselength / 2 * j, left + width / 2 * i, CaseHeight - 30]) rotate([90 * j, 0, 90]) xt60();
         }
     }
 }
@@ -305,7 +305,7 @@ translate([-X_ObjectPosition,0,Z_TopHigh+0.03]) rotate([0,Y_TopRotation,0]) diff
         //cylinder(h=18,d=10,center = true); // Example
     }
     // **** Add your top case cuts here ****
-    power_meter_cut();
+    rotate ([0, 0, 90]) power_meter_cut();
 }
 
 //===============================================================================
