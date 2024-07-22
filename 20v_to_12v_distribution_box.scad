@@ -65,7 +65,7 @@ SeeGrooveRidgeScrew       = false;
 // Length of the case
 Caselength                = 80;
 // Width of the case
-CaseWidth                 = 130;
+CaseWidth                 = 140;
 // Height of the case
 CaseHeight                = 100;
 // Splitt the Case height into bottom and top, check for the needed screws in echo output (console)
@@ -274,20 +274,21 @@ translate([X_ObjectPosition,0,0]) rotate([0,0,0]) difference(){
     // How much to offset the outlet cuts up. Roughly half of the output cut size.
     OutletsOffset = 40;
     // The distance between an XT60 closest to the edge of the box and the edge of the box.
-    XT60EdgeDist = 25;
+    XT60EdgeDist = 30;
     // **** Add your bottom case cuts here ****
     //cylinder(h=15,d=20,center = true); // Example
     translate([0, CaseWidth / 2, OutletsOffset]) rotate([0, 90, 90])  inlet_cut();
     translate([0, -CaseWidth / 2, OutletsOffset]) rotate([0, 90, 90]) outlet_cut();
-    translate([Caselength / 2, 0, OutletsOffset - 10]) rotate([90, 0, 90]) usb_charger();
-    translate([Caselength / 2, CaseWidth / 2 - 25, 30]) rotate([90, 0, 90]) power_switch();
+    translate([Caselength / 2, 10, OutletsOffset - 16]) rotate([90, 0, 90]) usb_charger();
+    translate([- Caselength / 2, -25, OutletsOffset - 16]) rotate([-90, 0, 90]) usb_charger();
+    translate([Caselength / 2, CaseWidth / 2 - 20, 20]) rotate([90, 0, 90]) power_switch();
     
     left = - CaseWidth / 2 + XT60EdgeDist;
     right = CaseWidth / 2 - XT60EdgeDist;
     width = right - left;
     for (i = [0, 1, 2]) {
         for (j = [-1, 1]) {
-        translate([Caselength / 2 * j, left + width / 2 * i, CaseHeight - 30]) rotate([90 * j, 0, 90]) xt60();
+        translate([Caselength / 2 * j, left + width / 2 * i, CaseHeight - 20]) rotate([90 * j, 0, 90]) xt60();
         }
     }
 }
