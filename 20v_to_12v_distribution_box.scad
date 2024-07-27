@@ -211,7 +211,7 @@ ScrewAddXPos              = [0,CaseWidth/2-CaseRoundingRadius,0];
 ScrewAddYPos              = [Caselength/2-CaseRoundingRadius,0,0];
 
 // Calculated settings for wall mount holder
-MountHolderLenght         = MountHolderHoleDiameter*3;
+MountHolderLenght         = MountHolderHoleDiameter*5;
 
 // if both objects showed
 X_ObjectPosition = ((ShowBottom)&&(ShowTop)&&(!ShowCaseAssembled)) ? Caselength/2+DistanceBetweenObjects/2:0;
@@ -282,15 +282,18 @@ translate([X_ObjectPosition,0,0]) rotate([0,0,0]) difference(){
         //cylinder(h=20,d=15,center = true); // Example
     }
     // How much to offset the outlet cuts up. Roughly half of the output cut size.
-    OutletsOffset = 40;
+    OutletsOffset = 45;
     // The distance between an XT60 closest to the edge of the box and the edge of the box.
     XT60EdgeDist = 30;
     // **** Add your bottom case cuts here ****
     //cylinder(h=15,d=20,center = true); // Example
     translate([0, CaseWidth / 2, OutletsOffset]) rotate([0, 90, 90])  inlet_cut();
     translate([0, -CaseWidth / 2, OutletsOffset]) rotate([0, 90, 90]) outlet_cut();
-    translate([Caselength / 2, 10, OutletsOffset - 16]) rotate([90, 0, 90]) usb_charger();
-    translate([- Caselength / 2, -25, OutletsOffset - 16]) rotate([-90, 0, 90]) usb_charger();
+
+    // Diameter of the narrow end of the USB charger is 27.15. So 27.50 between centers of chargers should be enough.
+    translate([Caselength / 2, 11.0, OutletsOffset - 24]) rotate([90, 0, 90]) usb_charger();
+    translate([- Caselength / 2, -16.5, OutletsOffset - 24]) rotate([-90, 0, 90]) usb_charger();
+
     translate([Caselength / 2, CaseWidth / 2 - 20, 20]) rotate([90, 0, 90]) power_switch();
     
     left = - CaseWidth / 2 + XT60EdgeDist;
@@ -491,7 +494,7 @@ module MountHolder (Thick,Hole) {
             }
             translate([0,-(3*HolderWidth)/2-MountHolderLenght,-0.02]) cube([10*HolderWidth,3*HolderWidth,Thick*2+0.06],center=true);
             translate([0,-(3*HolderWidth)/2,-Thick-0.02]) cube([4*HolderWidth,4*HolderWidth,Thick*2],center=true);
-            translate([0,-MountHolderLenght+Hole*1.8,MountHolderThickness/2-0.02]) cylinder(h=MountHolderThickness+0.06,d=Hole,center = true);  
+            translate([0,-MountHolderLenght+Hole*3.3,MountHolderThickness/2-0.02]) cylinder(h=MountHolderThickness+0.06,d=Hole,center = true);  
         }
     }
 
