@@ -124,6 +124,16 @@ NutDia                    = 5.4;
 // Select if you want to use square nuts instead of normal nuts
 UseSquareNutInsteadOfNut  = false; 
 
+// Use heat set inserts instead of nuts.
+UseHeatSetInserts = true;
+
+// M3 heat set insert. Source:
+// https://www.cnckitchen.com/blog/tipps-amp-tricks-fr-gewindeeinstze-im-3d-druck-3awey
+HeatSetInsertDiameter = 4.0;
+
+// We use blind holes, so +1.0mm is recommended.
+HeatSetInsertLength = 5.7 + 1.0;
+
 // Select the high of the square nut / Do not add separation space, only the real measurement
 SquareNutHigh             = 1.9;
 
@@ -614,24 +624,41 @@ module BodyQuarterBottom (Caselength,CaseWidth,CutFromTop,CaseRoundingRadius,Sid
         }
 
 
-        if(UseSquareNutInsteadOfNut)
+        if(UseHeatSetInserts)
         {
-            if (EdgeSquareNutInsertFrom_X) {translate(ScrewCornerPos) translate([0,0,CutFromTop+0.01]) rotate([0,0, 0]) SquareNutCut(CutFromTop,SquareNutHigh,SquareNutSize);}
-            else                           {translate(ScrewCornerPos) translate([0,0,CutFromTop+0.01]) rotate([0,0,90]) SquareNutCut(CutFromTop,SquareNutHigh,SquareNutSize);}
+            translate(ScrewCornerPos) translate([0,0,CutFromTop-HeatSetInsertLength]) cylinder(h = HeatSetInsertLength+0.01, d = HeatSetInsertDiameter, center = false);
         }
-        else {translate(ScrewCornerPos) translate([0,0,CutFromTop+0.01]) NutCut(CutFromTop,NutHigh,NutDia);}
-
-
-
-
+        else
+        {
+            if(UseSquareNutInsteadOfNut)
+            {
+                if (EdgeSquareNutInsertFrom_X) {translate(ScrewCornerPos) translate([0,0,CutFromTop+0.01]) rotate([0,0, 0]) SquareNutCut(CutFromTop,SquareNutHigh,SquareNutSize);}
+                else                           {translate(ScrewCornerPos) translate([0,0,CutFromTop+0.01]) rotate([0,0,90]) SquareNutCut(CutFromTop,SquareNutHigh,SquareNutSize);}
+            }
+            else {translate(ScrewCornerPos) translate([0,0,CutFromTop+0.01]) NutCut(CutFromTop,NutHigh,NutDia);}
+        }
 
         if (XAdditionalScrew){
-            if(UseSquareNutInsteadOfNut) {translate(ScrewAddXPos) translate([0,0,CutFromTop+0.01]) rotate([0,0,90]) SquareNutCut(CutFromTop,SquareNutHigh,SquareNutSize);}
-            else                         {translate(ScrewAddXPos) translate([0,0,CutFromTop+0.01]) NutCut(CutFromTop,NutHigh,NutDia);}
+            if(UseHeatSetInserts)
+            {
+                translate(ScrewAddXPos) translate([0,0,CutFromTop-HeatSetInsertLength]) cylinder(h = HeatSetInsertLength+0.01, d = HeatSetInsertDiameter, center = false);
+            }
+            else
+            {
+                if(UseSquareNutInsteadOfNut) {translate(ScrewAddXPos) translate([0,0,CutFromTop+0.01]) rotate([0,0,90]) SquareNutCut(CutFromTop,SquareNutHigh,SquareNutSize);}
+                else                         {translate(ScrewAddXPos) translate([0,0,CutFromTop+0.01]) NutCut(CutFromTop,NutHigh,NutDia);}
+            }
         }
         if (YAdditionalScrew){
-            if(UseSquareNutInsteadOfNut) {translate(ScrewAddYPos) translate([0,0,CutFromTop+0.01]) SquareNutCut(CutFromTop,SquareNutHigh,SquareNutSize);}
-            else                         {translate(ScrewAddYPos) translate([0,0,CutFromTop+0.01]) NutCut(CutFromTop,NutHigh,NutDia);}
+            if(UseHeatSetInserts)
+            {
+                translate(ScrewAddYPos) translate([0,0,CutFromTop-HeatSetInsertLength]) cylinder(h = HeatSetInsertLength+0.01, d = HeatSetInsertDiameter, center = false);
+            }
+            else
+            {
+                if(UseSquareNutInsteadOfNut) {translate(ScrewAddYPos) translate([0,0,CutFromTop+0.01]) SquareNutCut(CutFromTop,SquareNutHigh,SquareNutSize);}
+                else                         {translate(ScrewAddYPos) translate([0,0,CutFromTop+0.01]) NutCut(CutFromTop,NutHigh,NutDia);}
+            }
         }
     }
 }
